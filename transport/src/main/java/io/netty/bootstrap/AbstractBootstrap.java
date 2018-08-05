@@ -207,8 +207,9 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
      * Validate all the parameters. Sub-classes may override this, but should
      * call the super method in that case.
      */
+    // TODO 检查相关参数是否设置了
     public B validate() {
-        if (group == null) {
+        if (group == null) {// 接收连接的group==>g.group(bossGroup, workerGroup)中的bossGroup
             throw new IllegalStateException("group not set");
         }
         if (channelFactory == null) {
@@ -237,8 +238,9 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
     /**
      * Create a new {@link Channel} and bind it.
      */
+    // TODO 绑定ip和端口
     public ChannelFuture bind() {
-        validate();
+        validate();// 相关参数检查
         SocketAddress localAddress = this.localAddress;
         if (localAddress == null) {
             throw new IllegalStateException("localAddress not set");
@@ -278,19 +280,22 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
         return doBind(localAddress);
     }
 
+    // TODO 开始绑了
     private ChannelFuture doBind(final SocketAddress localAddress) {
-        final ChannelFuture regFuture = initAndRegister();
+        final ChannelFuture regFuture = initAndRegister();// 获取实例
         final Channel channel = regFuture.channel();
+        // 判断在执行initAndRegister()时是否发生了异常
         if (regFuture.cause() != null) {
             return regFuture;
         }
 
-        if (regFuture.isDone()) {
+        if (regFuture.isDone()) {// 判断initAndRegister()是否执行完毕
             // At this point we know that the registration was complete and successful.
             ChannelPromise promise = channel.newPromise();
-            doBind0(regFuture, channel, localAddress, promise);
+            doBind0(regFuture, channel, localAddress, promise);// socket绑定
             return promise;
         } else {
+            // 添加ChannelFutureListener监听,当initAndRegister()执行完成时,调用operationComplete()并执行doBind0进行socket绑定
             // Registration future is almost always fulfilled already, but just in case it's not.
             final PendingRegistrationPromise promise = new PendingRegistrationPromise(channel);
             regFuture.addListener(new ChannelFutureListener() {
@@ -317,8 +322,8 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
     final ChannelFuture initAndRegister() {
         Channel channel = null;
         try {
-            channel = channelFactory.newChannel();
-            init(channel);
+            channel = channelFactory.newChannel();// 反射获取NioServerSocketChannel
+            init(channel);// 初始化channel
         } catch (Throwable t) {
             if (channel != null) {
                 // channel can be null if newChannel crashed (eg SocketException("too many open files"))
@@ -330,7 +335,7 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
             return new DefaultChannelPromise(new FailedChannel(), GlobalEventExecutor.INSTANCE).setFailure(t);
         }
 
-        ChannelFuture regFuture = config().group().register(channel);
+        ChannelFuture regFuture = config().group().register(channel);// 注册channel
         if (regFuture.cause() != null) {
             if (channel.isRegistered()) {
                 channel.close();
