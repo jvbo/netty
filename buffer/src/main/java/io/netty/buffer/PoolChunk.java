@@ -99,6 +99,12 @@ package io.netty.buffer;
  * memoryMap[id]= depth_of_id  is defined above
  * depthMap[id]= x  indicates that the first node which is free to be allocated is at depth x (from root)
  */
+
+/**
+ * TODO 主要用来组织和管理多个Page的内存分配和释放;
+ * 这里的Page被构成一棵二叉树;
+ * @param <T>
+ */
 final class PoolChunk<T> implements PoolChunkMetric {
 
     private static final int INTEGER_SIZE_MINUS_ONE = Integer.SIZE - 1;

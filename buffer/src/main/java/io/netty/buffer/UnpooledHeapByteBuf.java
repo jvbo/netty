@@ -35,11 +35,17 @@ import static io.netty.util.internal.ObjectUtil.checkNotNull;
  * {@link UnpooledByteBufAllocator#heapBuffer(int, int)}, {@link Unpooled#buffer(int)} and
  * {@link Unpooled#wrappedBuffer(byte[])} instead of calling the constructor explicitly.
  */
+/**
+ * TODO 是基于堆内存进行分配的字节缓冲区,它没有基于对象池技术实现,
+ * 这就意味着每次I/O的读写都会创建一个新的UnpooledHeapByteBuf,
+ * 频繁进行大块内存的分配和回收对性能会造成一定影响,
+ * 但是相比于堆外内存的申请和释放,它的成本还是会低一些;
+ */
 public class UnpooledHeapByteBuf extends AbstractReferenceCountedByteBuf {
 
-    private final ByteBufAllocator alloc;
-    byte[] array;
-    private ByteBuffer tmpNioBuf;
+    private final ByteBufAllocator alloc;// 用于内存分配
+    byte[] array;// 缓冲区
+    private ByteBuffer tmpNioBuf;// 用于实现Netty ByteBuf到jdk nio ByteBuffer的转换;
 
     /**
      * Creates a new heap buffer with a newly allocated byte array.
@@ -94,7 +100,7 @@ public class UnpooledHeapByteBuf extends AbstractReferenceCountedByteBuf {
 
     private void setArray(byte[] initialArray) {
         array = initialArray;
-        tmpNioBuf = null;
+        tmpNioBuf = null;// 动态扩容完成,置为空
     }
 
     @Override

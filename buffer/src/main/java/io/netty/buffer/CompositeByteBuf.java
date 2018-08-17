@@ -41,6 +41,11 @@ import static io.netty.util.internal.ObjectUtil.checkNotNull;
  * {@link ByteBufAllocator#compositeBuffer()} or {@link Unpooled#wrappedBuffer(ByteBuf...)} instead of calling the
  * constructor explicitly.
  */
+
+/**
+ * TODO 允许将多个ByteBuf的实例组装到一起,形成一个统一的视图,
+ * 有点类似于数据库将多个表的字段组装到一起统一用视图展示;
+ */
 public class CompositeByteBuf extends AbstractReferenceCountedByteBuf implements Iterable<ByteBuf> {
 
     private static final ByteBuffer EMPTY_NIO_BUFFER = Unpooled.EMPTY_BUFFER.nioBuffer();

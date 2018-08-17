@@ -25,6 +25,10 @@ import static io.netty.util.internal.ObjectUtil.checkPositive;
 /**
  * Abstract base class for {@link ByteBuf} implementations that count references.
  */
+
+/**
+ * TODO 对引用进行计数,类似jvm内存回收的对象引用计数器,用于跟踪对象的分配和销毁,做自动内存回收;
+ */
 public abstract class AbstractReferenceCountedByteBuf extends AbstractByteBuf {
 
     private static final AtomicIntegerFieldUpdater<AbstractReferenceCountedByteBuf> refCntUpdater =

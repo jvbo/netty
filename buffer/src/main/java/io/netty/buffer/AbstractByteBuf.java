@@ -41,6 +41,10 @@ import static io.netty.util.internal.MathUtil.isOutOfBounds;
 /**
  * A skeletal implementation of a buffer.
  */
+
+/**
+ * TODO ByteBuf公共属性和功能实现
+ */
 public abstract class AbstractByteBuf extends ByteBuf {
     private static final InternalLogger logger = InternalLoggerFactory.getInstance(AbstractByteBuf.class);
     private static final String PROP_MODE = "io.netty.buffer.bytebuf.checkAccessible";
@@ -53,11 +57,12 @@ public abstract class AbstractByteBuf extends ByteBuf {
         }
     }
 
+    // 所有ByteBuf实例共享同一个 #ResourceLeakDetector 对象
     static final ResourceLeakDetector<ByteBuf> leakDetector =
             ResourceLeakDetectorFactory.instance().newResourceLeakDetector(ByteBuf.class);
 
-    int readerIndex;
-    int writerIndex;
+    int readerIndex;// 读索引
+    int writerIndex;// 写索引
     private int markedReaderIndex;
     private int markedWriterIndex;
     private int maxCapacity;
@@ -256,6 +261,12 @@ public abstract class AbstractByteBuf extends ByteBuf {
         }
     }
 
+    /**
+     * TODO 可用空间不足时,自动扩容
+     * @param minWritableBytes
+     *        the expected minimum number of writable bytes
+     * @return
+     */
     @Override
     public ByteBuf ensureWritable(int minWritableBytes) {
         if (minWritableBytes < 0) {
@@ -941,6 +952,11 @@ public abstract class AbstractByteBuf extends ByteBuf {
         return this;
     }
 
+    /**
+     * TODO 跳过指定长度字节
+     * @param length
+     * @return
+     */
     @Override
     public ByteBuf skipBytes(int length) {
         checkReadableBytes(length);
@@ -956,6 +972,7 @@ public abstract class AbstractByteBuf extends ByteBuf {
 
     @Override
     public ByteBuf writeByte(int value) {
+        // 这里自动扩容
         ensureWritable0(1);
         _setByte(writerIndex++, value);
         return this;

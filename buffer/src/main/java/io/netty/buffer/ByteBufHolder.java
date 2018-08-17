@@ -20,6 +20,16 @@ import io.netty.util.ReferenceCounted;
 /**
  * A packet which is send or receive.
  */
+
+/**
+ * TODO 是ByteBuf的容器,在Netty中非常有用,
+ * 例如http协议的请求消息和应答消息都可以携带消息体,
+ * 这个消息体在NIO ByteBuffer中就是个ByteBuffer对象,
+ * 在Netty中就是ByteBuf对象;由于不同的协议消息体可以包含不同的协议字段和功能,
+ * 因此,需要对ByteBuf进行包装和抽象,不同的子类可以有不同的是实现;
+ * 为了满足这些定制化的需求,Netty抽象出了ByteBufHolder对象,它包含了一个ByteBuf,
+ * 另外还提供了一些其他实用的方法,使用者继承ByteBufHolder接口后可以按需封装自己的实现;
+ */
 public interface ByteBufHolder extends ReferenceCounted {
 
     /**

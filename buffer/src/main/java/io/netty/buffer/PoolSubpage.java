@@ -16,6 +16,12 @@
 
 package io.netty.buffer;
 
+/**
+ * TODO 对于小于一个Page的内存,Netty在Page中完成分配;
+ * 每个Page会被切分成大小相等的多个存储块,
+ * 存储块的大小由第一次申请的内存块大小决定;
+ * @param <T>
+ */
 final class PoolSubpage<T> implements PoolSubpageMetric {
 
     final PoolChunk<T> chunk;

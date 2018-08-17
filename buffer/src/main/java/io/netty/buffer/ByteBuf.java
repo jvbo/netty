@@ -245,6 +245,13 @@ import java.nio.charset.UnsupportedCharsetException;
  * Please refer to {@link ByteBufInputStream} and
  * {@link ByteBufOutputStream}.
  */
+
+/**
+ * TODO 抽象类,扩展jdk的ByteBuffer
+ * 是Netty中最重要,最基础的数据结构;
+ * 主要操作类似增删改查
+ * 0x00:NULL
+ */
 @SuppressWarnings("ClassMayBeInterface")
 public abstract class ByteBuf implements ReferenceCounted, Comparable<ByteBuf> {
 
@@ -1348,6 +1355,10 @@ public abstract class ByteBuf implements ReferenceCounted, Comparable<ByteBuf> {
      * @throws IndexOutOfBoundsException
      *         if {@code this.readableBytes} is less than {@code 1}
      */
+    /**
+     * TODO 从readIndex开始获取boolean值,readerIndex增加1;
+     * @return
+     */
     public abstract boolean readBoolean();
 
     /**
@@ -2084,6 +2095,14 @@ public abstract class ByteBuf implements ReferenceCounted, Comparable<ByteBuf> {
      * @return the absolute index of the first occurrence if found.
      *         {@code -1} otherwise.
      */
+    /**
+     * TODO 从当前ByteBuf中定位出首次出现value的位置,起始索引为fromIndex,终点是toIndex,
+     * 如果没有查找到则返回-1,否则返回第一条满足搜索条件的位置索引;
+     * @param fromIndex
+     * @param toIndex
+     * @param value
+     * @return
+     */
     public abstract int indexOf(int fromIndex, int toIndex, byte value);
 
     /**
@@ -2096,6 +2115,13 @@ public abstract class ByteBuf implements ReferenceCounted, Comparable<ByteBuf> {
      *
      * @return the number of bytes between the current {@code readerIndex}
      *         and the first occurrence if found. {@code -1} otherwise.
+     */
+    /**
+     * TODO 从当前ByteBuf中定位出首次出现value的位置,起始索引为readerIndex,
+     * 终点是writeIndex,如果没有查找到则返回-1,否则返回第一条满足搜索条件的位置索引,
+     * 该方法不会修改readerIndex和writeIndex;
+     * @param value
+     * @return
      */
     public abstract int bytesBefore(byte value);
 
@@ -2113,6 +2139,14 @@ public abstract class ByteBuf implements ReferenceCounted, Comparable<ByteBuf> {
      * @throws IndexOutOfBoundsException
      *         if {@code length} is greater than {@code this.readableBytes}
      */
+    /**
+     * TODO 从当前ByteBuf中定位首次出现value的位置,起始索引为readerIndex,终点是readerIndex + length,
+     * 如果没有查找到则返回-1,否则返回第一条满足搜索条件的位置索引;如果length大于当前字节缓冲区的可读字节数,
+     * 则抛出IndexOutOfBoundsException异常;
+     * @param length
+     * @param value
+     * @return
+     */
     public abstract int bytesBefore(int length, byte value);
 
     /**
@@ -2129,6 +2163,14 @@ public abstract class ByteBuf implements ReferenceCounted, Comparable<ByteBuf> {
      * @throws IndexOutOfBoundsException
      *         if {@code index + length} is greater than {@code this.capacity}
      */
+    /**
+     * TODO 从当前ByteBuf中定位出首次出现value的位置,起始索引为index,终点是index+length,如果没有查找到则返回-1,
+     * 否则返回第一条满足搜索条件的位置索引;如果index+length大于当前字节缓冲区的容量,则判处IndexOutOfBoundsException异常;
+     * @param index
+     * @param length
+     * @param value
+     * @return
+     */
     public abstract int bytesBefore(int index, int length, byte value);
 
     /**
@@ -2136,6 +2178,12 @@ public abstract class ByteBuf implements ReferenceCounted, Comparable<ByteBuf> {
      *
      * @return {@code -1} if the processor iterated to or beyond the end of the readable bytes.
      *         The last-visited index If the {@link ByteProcessor#process(byte)} returned {@code false}.
+     */
+    /**
+     * TODO 遍历当前ByteBuf的可读字节数组,与 #ByteProcessor 设置的查找条件进行对比,如果满足条件,
+     * 则返回位置索引,否则返回-1;
+     * @param processor
+     * @return
      */
     public abstract int forEachByte(ByteProcessor processor);
 
@@ -2146,6 +2194,14 @@ public abstract class ByteBuf implements ReferenceCounted, Comparable<ByteBuf> {
      * @return {@code -1} if the processor iterated to or beyond the end of the specified area.
      *         The last-visited index If the {@link ByteProcessor#process(byte)} returned {@code false}.
      */
+    /**
+     * TODO 以index为起始位置,index+length为终止位置进行遍历,与 #ByteProcessor 设置的查找条件进行对比,
+     * 如果满足条件,则返回位置索引,否则返回-1;
+     * @param index
+     * @param length
+     * @param processor
+     * @return
+     */
     public abstract int forEachByte(int index, int length, ByteProcessor processor);
 
     /**
@@ -2153,6 +2209,13 @@ public abstract class ByteBuf implements ReferenceCounted, Comparable<ByteBuf> {
      *
      * @return {@code -1} if the processor iterated to or beyond the beginning of the readable bytes.
      *         The last-visited index If the {@link ByteProcessor#process(byte)} returned {@code false}.
+     */
+    /**
+     * TODO 遍历当前ByteBuf的可读字节数组,与 #ByteProcessor 设置的查找条件进行对比,
+     * 如果满足条件,则返回位置索引,否则返回-1;注意对字节数组进行迭代的时候采用逆序的方式,
+     * 也就是从writeIndex - 1开始迭代,知道readerIndex;
+     * @param processor
+     * @return
      */
     public abstract int forEachByteDesc(ByteProcessor processor);
 
@@ -2164,6 +2227,14 @@ public abstract class ByteBuf implements ReferenceCounted, Comparable<ByteBuf> {
      * @return {@code -1} if the processor iterated to or beyond the beginning of the specified area.
      *         The last-visited index If the {@link ByteProcessor#process(byte)} returned {@code false}.
      */
+    /**
+     * TODO 以Index为起始位置,index+length为终止位置进行遍历,与 # ByteProcessor设置的查找条件进行对比,
+     * 如果满足条件,则返回位置索引,否则返回-1;采用逆序查找的方式,从index+length-1开始,知道index;
+     * @param index
+     * @param length
+     * @param processor
+     * @return
+     */
     public abstract int forEachByteDesc(int index, int length, ByteProcessor processor);
 
     /**
@@ -2173,6 +2244,10 @@ public abstract class ByteBuf implements ReferenceCounted, Comparable<ByteBuf> {
      * This method does not modify {@code readerIndex} or {@code writerIndex} of
      * this buffer.
      */
+    /**
+     * TODO 复制一个新的ByteBuf对象,它的内容和索引都是独立的,复制操作本身并不修改ByteBuf的读写索引;
+     * @return
+     */
     public abstract ByteBuf copy();
 
     /**
@@ -2180,6 +2255,13 @@ public abstract class ByteBuf implements ReferenceCounted, Comparable<ByteBuf> {
      * the returned buffer or this buffer does not affect each other at all.
      * This method does not modify {@code readerIndex} or {@code writerIndex} of
      * this buffer.
+     */
+    /**
+     * TODO 从指定的索引开始复制,复制的字节长度为length,
+     * 复制后的ByteBuf内容和读写索引都与之前的独立;
+     * @param index
+     * @param length
+     * @return
      */
     public abstract ByteBuf copy(int index, int length);
 
@@ -2193,6 +2275,12 @@ public abstract class ByteBuf implements ReferenceCounted, Comparable<ByteBuf> {
      * <p>
      * Also be aware that this method will NOT call {@link #retain()} and so the
      * reference count will NOT be increased.
+     */
+    /**
+     * TODO 返回当前ByteBuf的可读子缓冲区,起始位置从readerIndex到writeIndex,
+     * 返回后的ByteBuf与原ByteBuf共享内容,但是读写索引独立维护;
+     * 读操作并不修改原ByteBuf的readerIndex和writeIndex;
+     * @return
      */
     public abstract ByteBuf slice();
 
@@ -2219,6 +2307,13 @@ public abstract class ByteBuf implements ReferenceCounted, Comparable<ByteBuf> {
      * <p>
      * Also be aware that this method will NOT call {@link #retain()} and so the
      * reference count will NOT be increased.
+     */
+    /**
+     * TODO 返回当前ByteBuf的可读子缓冲区,起始位置从index到index + length,返回后的ByteBuf与原ByteBuf共享内容,
+     * 但是读写索引独立维护;该操作并不修改原ByteBuf的readerIndex和writeIndex;
+     * @param index
+     * @param length
+     * @return
      */
     public abstract ByteBuf slice(int index, int length);
 
@@ -2247,6 +2342,11 @@ public abstract class ByteBuf implements ReferenceCounted, Comparable<ByteBuf> {
      * @return A buffer whose readable content is equivalent to the buffer returned by {@link #slice()}.
      * However this buffer will share the capacity of the underlying buffer, and therefore allows access to all of the
      * underlying content if necessary.
+     */
+    /**
+     * TODO 返回当前ByteBuf的复制对象,复制后返回的ByteBuf与操作的ByteBuf共享缓冲区内容,但是维护自己独立的读写索引;
+     * 当修改复制后的ByteBuf内容后,之前原ByteBuf的内容也随之改变,双方持有的是同一个内容指针引用;
+     * @return
      */
     public abstract ByteBuf duplicate();
 
@@ -2295,6 +2395,12 @@ public abstract class ByteBuf implements ReferenceCounted, Comparable<ByteBuf> {
      * @see #nioBuffers()
      * @see #nioBuffers(int, int)
      */
+    /**
+     * TODO 将当前ByteBuf可读的缓冲区转换成ByteBuffer,两者共享同一个缓冲区内容引用,
+     * 对ByteBuffer的读写操作并不会修改原ByteBuf的读写索引;
+     * 需要指出的是,返回后的ByteBuffer无法感知原ByteBuf的动态扩展操作;
+     * @return
+     */
     public abstract ByteBuffer nioBuffer();
 
     /**
@@ -2311,6 +2417,14 @@ public abstract class ByteBuf implements ReferenceCounted, Comparable<ByteBuf> {
      * @see #nioBufferCount()
      * @see #nioBuffers()
      * @see #nioBuffers(int, int)
+     */
+    /**
+     * TODO 将当前ByteBuf从index开始长度为length的缓冲区转换成ByteBuffer,两者共享同一个缓冲区内容引用,
+     * 对ByteBuffer的读写操作并不会修改原ByteBuf的读写索引;
+     * 需要指出的是,返回后的ByteBuffer无法感知原ByteBuf的动态扩展操作;
+     * @param index
+     * @param length
+     * @return
      */
     public abstract ByteBuffer nioBuffer(int index, int length);
 

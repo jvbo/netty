@@ -27,6 +27,10 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.GatheringByteChannel;
 import java.nio.channels.ScatteringByteChannel;
 
+/**
+ * TODO 基于内存池实现,与UnpooledDirectByteBuf的唯一不同就是缓冲区的分配是销毁策略不同,
+ * 其他功能都是等同的,也就是说,两者唯一的不同就是内存分配策略不同;
+ */
 final class PooledDirectByteBuf extends PooledByteBuf<ByteBuffer> {
 
     private static final Recycler<PooledDirectByteBuf> RECYCLER = new Recycler<PooledDirectByteBuf>() {
@@ -37,6 +41,8 @@ final class PooledDirectByteBuf extends PooledByteBuf<ByteBuffer> {
     };
 
     static PooledDirectByteBuf newInstance(int maxCapacity) {
+        // 由于采用内存池实现,所以新创建PooledDirectByteBuf对象时不能直接new一个实例的,
+        // 而是从内存池中获取,然后设置引用计数器的值;
         PooledDirectByteBuf buf = RECYCLER.get();
         buf.reuse(maxCapacity);
         return buf;

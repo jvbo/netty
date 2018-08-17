@@ -50,6 +50,10 @@ import static io.netty.util.internal.StringUtil.isSurrogate;
  * A collection of utility methods that is related with handling {@link ByteBuf},
  * such as the generation of hex dump and swapping an integer's byte order.
  */
+
+/**
+ * TODO 工具类,提供了一系列静态方法用于操作ByteBuf对象;
+ */
 public final class ByteBufUtil {
 
     private static final InternalLogger logger = InternalLoggerFactory.getInstance(ByteBufUtil.class);
@@ -114,6 +118,12 @@ public final class ByteBufUtil {
     /**
      * Returns a <a href="http://en.wikipedia.org/wiki/Hex_dump">hex dump</a>
      * of the specified byte array.
+     */
+    /**
+     * TODO 能够将参数ByteBuf的内容以十六进制字符串的方式打印出来,
+     * 用于输出日志或者打印码流,方便问题定位,提升系统的可维护性;
+     * @param array
+     * @return
      */
     public static String hexDump(byte[] array) {
         return hexDump(array, 0, array.length);
@@ -705,6 +715,13 @@ public final class ByteBufUtil {
      * Encode the given {@link CharBuffer} using the given {@link Charset} into a new {@link ByteBuf} which
      * is allocated via the {@link ByteBufAllocator}.
      */
+    /**
+     * TODO 对字符串的编码
+     * @param alloc
+     * @param src
+     * @param charset
+     * @return
+     */
     public static ByteBuf encodeString(ByteBufAllocator alloc, CharBuffer src, Charset charset) {
         return encodeString0(alloc, false, src, charset, 0);
     }
@@ -756,6 +773,14 @@ public final class ByteBufUtil {
         }
     }
 
+    /**
+     * TODO 对字符串的解码
+     * @param src
+     * @param readerIndex
+     * @param len
+     * @param charset
+     * @return
+     */
     static String decodeString(ByteBuf src, int readerIndex, int len, Charset charset) {
         if (len == 0) {
             return StringUtil.EMPTY_STRING;

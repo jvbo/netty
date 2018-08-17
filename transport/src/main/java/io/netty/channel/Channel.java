@@ -74,6 +74,11 @@ import java.net.SocketAddress;
  * resources once you are done with the {@link Channel}. This ensures all resources are
  * released in a proper way, i.e. filehandles.
  */
+
+/**
+ * TODO 是Netty网络操作抽象类,聚合了一组功能,
+ * 包括但不限于网络的读,写,客户端发起连接,主动关闭连接,链路关闭,获取通信双方的网络地址等;
+ */
 public interface Channel extends AttributeMap, ChannelOutboundInvoker, Comparable<Channel> {
 
     /**

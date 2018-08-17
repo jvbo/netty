@@ -19,6 +19,13 @@ package io.netty.buffer;
  * Implementations are responsible to allocate buffers. Implementations of this interface are expected to be
  * thread-safe.
  */
+
+/**
+ * TODO 字节缓冲区分配器;
+ * 按照Netty的缓冲区实现不同,共有两种不同的分配器:
+ * 1. 基于内存的字节缓冲区分配器;
+ * 2. 普通的字节缓冲区分配器;
+ */
 public interface ByteBufAllocator {
 
     ByteBufAllocator DEFAULT = ByteBufUtil.DEFAULT_ALLOCATOR;
