@@ -36,7 +36,7 @@ import static io.netty.util.internal.ObjectUtil.checkNotNull;
  * {@link Unpooled#wrappedBuffer(byte[])} instead of calling the constructor explicitly.
  */
 /**
- * TODO 是基于堆内存进行分配的字节缓冲区,它没有基于对象池技术实现,
+ * TODO 是基于堆内存进行内存分配的字节缓冲区,它没有基于对象池技术实现,
  * 这就意味着每次I/O的读写都会创建一个新的UnpooledHeapByteBuf,
  * 频繁进行大块内存的分配和回收对性能会造成一定影响,
  * 但是相比于堆外内存的申请和释放,它的成本还是会低一些;

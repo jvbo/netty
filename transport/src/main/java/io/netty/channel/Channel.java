@@ -82,6 +82,25 @@ import java.net.SocketAddress;
 public interface Channel extends AttributeMap, ChannelOutboundInvoker, Comparable<Channel> {
 
     /**
+     * Channel是Netty抽象出来的网络I/O读写相关接口,为什么不使用JDK NIO原生的Channel而要另起炉灶呢,
+     * 主要原因如下:
+     * 1. jdk的SocketChannel和ServerSocketChannel没有同意的Channel接口供业务开发者调用,对于用户而言,没有统一的操作视图,
+     * 使用起来不方便;
+     * 2. jdk的SocketChannel和ServerSocketChannel的主要职责就是网络I/O操作,由于它们是SPI类接口,由具体的虚拟机厂家来提供,
+     * 所以通过继承SPI功能类来扩展其功能的难度很大;直接实现ServerSocketChannel和SocketChannel抽象类,其工作量和重新开发一个新的Channel功能类是差不多的;
+     * 3. Netty的Channel需要跟Netty的整体架构融合在一起,例如I/O模型,基于ChannelPipeline的定制模型,已经基于元数据描述配置化的tcp参数等,
+     * 这些jdk的SocketChannel和ServerSocketChannel都没有提供,需要重新封装;
+     * 4. 自定义的Channel,功能实现更加灵活;
+     *
+     *
+     * Channel设计理念:
+     * 1. 在Channel接口层,采用Facade模式进行统一封装,将网络I/O操作,网络I/O相关联的其他操作封装起来,统一对外提供;
+     * 2. Channel接口的定义尽量大而全,为SocketChannel和ServerSocketChannel提供统一的视图,由不同的子类实现不同的功能,
+     * 公共功能在抽象父类中实现,最大程度上实现功能和接口的重用;
+     * 3. 具体实现采用聚合而非包含的方式,将相关的功能类聚合在Channel中,由Channel统一负责分配和调度;功能实现更加灵活;
+     */
+
+    /**
      * Returns the globally unique identifier of this {@link Channel}.
      */
     ChannelId id();

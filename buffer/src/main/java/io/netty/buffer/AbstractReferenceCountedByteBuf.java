@@ -63,6 +63,7 @@ public abstract class AbstractReferenceCountedByteBuf extends AbstractByteBuf {
         return retain0(checkPositive(increment, "increment"));
     }
 
+    // TODO 通过自旋对引用计数器加increment;
     private ByteBuf retain0(final int increment) {
         int oldRef = refCntUpdater.getAndAdd(this, increment);
         if (oldRef <= 0 || oldRef + increment < oldRef) {
@@ -93,6 +94,7 @@ public abstract class AbstractReferenceCountedByteBuf extends AbstractByteBuf {
         return release0(checkPositive(decrement, "decrement"));
     }
 
+    // TODO 释放引用计数;
     private boolean release0(int decrement) {
         int oldRef = refCntUpdater.getAndAdd(this, -decrement);
         if (oldRef == decrement) {
