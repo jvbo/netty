@@ -181,7 +181,22 @@ import io.netty.handler.codec.serialization.ObjectDecoder;
  * </pre>
  * @see LengthFieldPrepender
  */
+
+/**
+ * TODO 半包解码器
+ */
 public class LengthFieldBasedFrameDecoder extends ByteToMessageDecoder {
+    /**
+     * 如何区分一个整包消息:
+     * 1. 固定长度,例如每120个字节代表一个整包消息,不足的前面补零;
+     * 解码器在处理这类定长消息的时候比较简单,每次读到指定长度的字节后再进行解码;
+     * 2. 通过回车换行符区分消息,例如ftp协议;这类区分消息的方式多用于文本协议;
+     * 3. 通过分隔符区分整包消息;
+     * 4. 通过指定长度来标识整包消息;
+     *
+     * 如果消息是通过长度进行区分的,LengthFieldBaseeFrameDecoder都可以自动处理粘包和半包问题,
+     * 只需传入正确的参数,即可轻松搞定读半包问题;
+     */
 
     private final ByteOrder byteOrder;
     private final int maxFrameLength;

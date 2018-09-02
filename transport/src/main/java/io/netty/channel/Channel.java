@@ -103,10 +103,20 @@ public interface Channel extends AttributeMap, ChannelOutboundInvoker, Comparabl
     /**
      * Returns the globally unique identifier of this {@link Channel}.
      */
+    /**
+     * TODO 获取Channel标识的id(),返回ChannelId对象,ChannelId是Channel的唯一标识;
+     * @return
+     */
     ChannelId id();
 
     /**
      * Return the {@link EventLoop} this {@link Channel} was registered to.
+     */
+    /**
+     * TODO Channel需要注册到EventLoop的多路复用器上,用于处理I/O事件,通过eventLoop()方法可以获取到Channel注册的EventLoop;
+     * EventLoop本质上就是处理网络读写事件的Reactor线程,在Netty中,它不仅仅用来处理网络事件,也可以用来执行定时任务和
+     * 用户自定义NioTask等任务;
+     * @return
      */
     EventLoop eventLoop();
 
@@ -116,30 +126,58 @@ public interface Channel extends AttributeMap, ChannelOutboundInvoker, Comparabl
      * @return the parent channel.
      *         {@code null} if this channel does not have a parent channel.
      */
+    /**
+     * TODO 对于服务端Channel而言,它的父Channel为空;
+     * 对于客户端Channel,它的父Channel就是创建它的ServerSocketChannel;
+     * @return
+     */
     Channel parent();
 
     /**
      * Returns the configuration of this channel.
+     */
+    /**
+     * TODO 获取当前Channel的配置信息,例如CONNECT_TIMEOUT_MILLIS
+     * @return
      */
     ChannelConfig config();
 
     /**
      * Returns {@code true} if the {@link Channel} is open and may get active later
      */
+    /**
+     * TODO 判断当前Channel是否已经打开;
+     * @return
+     */
     boolean isOpen();
 
     /**
      * Returns {@code true} if the {@link Channel} is registered with an {@link EventLoop}.
+     */
+    /**
+     * TODO 判断当前Channel是否已经注册到EventLoop上;
+     * @return
      */
     boolean isRegistered();
 
     /**
      * Return {@code true} if the {@link Channel} is active and so connected.
      */
+    /**
+     * TODO 判断当前Channel是否处于激活状态;
+     * @return
+     */
     boolean isActive();
 
     /**
      * Return the {@link ChannelMetadata} of the {@link Channel} which describe the nature of the {@link Channel}.
+     */
+    /**
+     * TODO 获取当前Channel的元数据描述信息,包括TCP参数配置等;
+     * 当创建Socket的时候需要指定TCP参数,例如接收和发送的TCP缓冲区大小,TCP的超时时间,
+     * 是否重用地址等等,在Netty中,每个Channel对应一个物理连接,每个连接都有自己的TCP参数配置;
+     * 所以,Channel会聚合一个ChannelMetadata用来对TCP参数提供元数据描述信息,通过metadata()就可以获取当前Channel的TCP参数配置;
+     * @return
      */
     ChannelMetadata metadata();
 
@@ -151,6 +189,10 @@ public interface Channel extends AttributeMap, ChannelOutboundInvoker, Comparabl
      *
      * @return the local address of this channel.
      *         {@code null} if this channel is not bound.
+     */
+    /**
+     * TODO 获取当前Channel的本地绑定地址;
+     * @return
      */
     SocketAddress localAddress();
 
@@ -167,6 +209,10 @@ public interface Channel extends AttributeMap, ChannelOutboundInvoker, Comparabl
      *         use {@link DatagramPacket#recipient()} to determine
      *         the origination of the received message as this method will
      *         return {@code null}.
+     */
+    /**
+     * TODO 获取当前Channel通信的远程Socket地址;
+     * @return
      */
     SocketAddress remoteAddress();
 
@@ -211,9 +257,20 @@ public interface Channel extends AttributeMap, ChannelOutboundInvoker, Comparabl
      */
     ByteBufAllocator alloc();
 
+    /**
+     * TODO 从当前的Channel中读取数据到第一个inbound缓冲区中,如果数据被成功读取,
+     * 触发ChannelHandler.channelRead(ChannelHandlerContext, Object)事件,
+     * 读取操作api操作完成后,紧接着会触发ChannelHandler.channelReadComplate(ChannelHandlerContext)事件,
+     * 这样业务ChannelHandler可以决定是否需要继续读取数据;如果已经有读操作请求被挂起,则后续的读操作会被忽略;
+     * @return
+     */
     @Override
     Channel read();
 
+    /**
+     * TODO 将之前写入到发送环形数组中的消息全部写入到目标Channel中,发送给通信对方;
+     * @return
+     */
     @Override
     Channel flush();
 
@@ -230,6 +287,7 @@ public interface Channel extends AttributeMap, ChannelOutboundInvoker, Comparabl
      *   <li>{@link #voidPromise()}</li>
      * </ul>
      */
+    // TODO Channel接口的辅助接口;
     interface Unsafe {
 
         /**
@@ -260,6 +318,11 @@ public interface Channel extends AttributeMap, ChannelOutboundInvoker, Comparabl
          * Bind the {@link SocketAddress} to the {@link Channel} of the {@link ChannelPromise} and notify
          * it once its done.
          */
+        /**
+         * TODO ChannelPromise用于写入操作结果;
+         * @param localAddress
+         * @param promise
+         */
         void bind(SocketAddress localAddress, ChannelPromise promise);
 
         /**
@@ -269,17 +332,36 @@ public interface Channel extends AttributeMap, ChannelOutboundInvoker, Comparabl
          *
          * The {@link ChannelPromise} will get notified once the connect operation was complete.
          */
+        /**
+         * TODO 客户端使用指定的服务端地址remoteAdress发起连接请求,如果连接因为应答超时而失败,
+         * ChannelFuture中的操作结果就是ConnectTimeoutException异常,如果连接被拒绝,操作结果为ConnectException;
+         * 该方法会级联触发ChannelHandler.connect(ChannelHandlerContext, SocketAddress, SocketAdress, ChannelPromise);
+         * @param remoteAddress
+         * @param localAddress
+         * @param promise
+         */
         void connect(SocketAddress remoteAddress, SocketAddress localAddress, ChannelPromise promise);
 
         /**
          * Disconnect the {@link Channel} of the {@link ChannelFuture} and notify the {@link ChannelPromise} once the
          * operation was complete.
          */
+        /**
+         * TODO 请求断开与远程通信对端的连接并使用ChannelPromise来获取操作结果的通知信息,
+         * 该方法会级联触发ChannelHandler.disconnect(ChannelHandlerContext, ChannelPromise)事件;
+         * @param promise
+         */
         void disconnect(ChannelPromise promise);
 
         /**
          * Close the {@link Channel} of the {@link ChannelPromise} and notify the {@link ChannelPromise} once the
          * operation was complete.
+         */
+        /**
+         * TODO 主动关闭当前连接,通过ChannelPromise设置操作结果并进行结果通知,无论操作是否成功,
+         * 都可以通过ChannelPromise获取操作结果;概操作会触发ChannelPipeline中所有ChannelHandler的
+         * ChannelHandler.close(ChannelHandlerContext, ChannelPromise)事件;
+         * @param promise
          */
         void close(ChannelPromise promise);
 
@@ -303,6 +385,13 @@ public interface Channel extends AttributeMap, ChannelOutboundInvoker, Comparabl
 
         /**
          * Schedules a write operation.
+         */
+        /**
+         * TODO 请求将当前的msg通过ChannelPipeline写入到目标Channel中,
+         * 注意write操作只是将消息存入到消息发送环形数组中,并没有真正被发送,
+         * 只有调用flush操作才会被写入到Channel中,发送给对方,ChannelPromise参数负责设置写入操作的结果;
+         * @param msg
+         * @param promise
          */
         void write(Object msg, ChannelPromise promise);
 

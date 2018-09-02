@@ -43,6 +43,11 @@ import io.netty.util.internal.TypeParameterMatcher;
  *     }
  * </pre>
  */
+
+/**
+ * TODO 负责将POJO对象编码成ByteBuf,用户的编码器继承MessageToByteEncoder;
+ * @param <I>
+ */
 public abstract class MessageToByteEncoder<I> extends ChannelOutboundHandlerAdapter {
 
     private final TypeParameterMatcher matcher;

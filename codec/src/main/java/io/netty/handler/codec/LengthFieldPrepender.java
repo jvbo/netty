@@ -50,6 +50,12 @@ import java.util.List;
  * +--------+----------------+
  * </pre>
  */
+
+/**
+ * TODO 如果协议中的第一个字段为长度字段,Netty提供了LengthFieldPrepender编码器,
+ * 可以计算当前待发送消息的二进制字节长度,将该长度添加到ByteBuf的缓冲区头中,
+ * 可以将待发送消息的长度写入到ByteBuf的前2个字节,编码后的消息组成为长度字段+原消息的方式;
+ */
 @Sharable
 public class LengthFieldPrepender extends MessageToMessageEncoder<ByteBuf> {
 

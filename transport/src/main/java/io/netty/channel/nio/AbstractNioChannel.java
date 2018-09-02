@@ -328,6 +328,9 @@ public abstract class AbstractNioChannel extends AbstractChannel {
             closeIfClosed();
         }
 
+        /**
+         * TODO 客户端接收到服务端的tcp握手应答消息,通过SocketChannel的finishConnect方法对连接结果进行判断;
+         */
         @Override
         public final void finishConnect() {
             // Note this method is invoked by the event loop only if the connection attempt was

@@ -48,6 +48,11 @@ import java.util.List;
  * are of type {@link ReferenceCounted}. This is needed as the {@link MessageToMessageEncoder} will call
  * {@link ReferenceCounted#release()} on encoded messages.
  */
+
+/**
+ * TODO 将一个POJO对象编码成另一个对象;
+ * @param <I>
+ */
 public abstract class MessageToMessageEncoder<I> extends ChannelOutboundHandlerAdapter {
 
     private final TypeParameterMatcher matcher;

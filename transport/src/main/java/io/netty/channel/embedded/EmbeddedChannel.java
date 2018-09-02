@@ -46,6 +46,10 @@ import io.netty.util.internal.logging.InternalLoggerFactory;
 /**
  * Base class for {@link Channel} implementations that are used in an embedded fashion.
  */
+
+/**
+ * TODO 用于本地测试;
+ */
 public class EmbeddedChannel extends AbstractChannel {
 
     private static final SocketAddress LOCAL_ADDRESS = new EmbeddedSocketAddress();

@@ -55,6 +55,10 @@ import java.util.List;
  * +----------+
  * </pre>
  */
+
+/**
+ * TODO 半包解码器
+ */
 public class DelimiterBasedFrameDecoder extends ByteToMessageDecoder {
 
     private final ByteBuf[] delimiters;

@@ -26,6 +26,10 @@ import java.net.NetworkInterface;
 /**
  * A UDP/IP {@link Channel}.
  */
+
+/**
+ * TODO 用于处理UDP;
+ */
 public interface DatagramChannel extends Channel {
     @Override
     DatagramChannelConfig config();

@@ -175,7 +175,20 @@ import java.lang.annotation.Target;
  * what fundamental differences they have, how they flow in a  pipeline,  and how to handle
  * the operation in your application.
  */
+
+/**
+ * TODO 负责对I/O事件或者I/O操作进行拦截和处理,它可以选择性地拦截和处理自己感兴趣的事件,
+ * 也可以透传和终止时间的传递;
+ */
 public interface ChannelHandler {
+
+    /**
+     * ChannelHandler是Netty框架和用户代码的主要扩展和定制点,所以它的子类种类繁多,功能各异,系统ChannelHandler主要分类如下:
+     * 1. ChannelPipeline的系统ChannelHandler,用于I/O操作和对事件进行预处理,对于用户不可见,
+     * 这类ChannelHandler主要包括HeadHandler和TailHandler;
+     * 2. 编解码ChannelHandler,包括ByteToMessageCodec,MessageToMessageDecoder等,这些编码类本身又包含多种子类;
+     * 3. 其他系统功能性ChannelHandler,包括流量整型Handler,读写超时Handler,日志Handler等;
+     */
 
     /**
      * Gets called after the {@link ChannelHandler} was added to the actual context and it's ready to handle events.

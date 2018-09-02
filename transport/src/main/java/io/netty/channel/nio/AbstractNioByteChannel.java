@@ -46,6 +46,7 @@ public abstract class AbstractNioByteChannel extends AbstractNioChannel {
             " (expected: " + StringUtil.simpleClassName(ByteBuf.class) + ", " +
             StringUtil.simpleClassName(FileRegion.class) + ')';
 
+    // TODO 负责继续写半包消息;
     private final Runnable flushTask = new Runnable() {
         @Override
         public void run() {
@@ -130,7 +131,7 @@ public abstract class AbstractNioByteChannel extends AbstractNioChannel {
 
         @Override
         public final void read() {
-            final ChannelConfig config = config();
+            final ChannelConfig config = config();// 主要用于设置客户端连接的tcp参数;
             if (shouldBreakReadReady(config)) {
                 clearReadPending();
                 return;

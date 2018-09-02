@@ -23,6 +23,13 @@ import java.util.Map;
 /**
  * Skeleton implementation of a {@link ChannelHandler}.
  */
+
+/**
+ * TODO 对于大多数的ChannelHandler会选择性的拦截和处理某个或者某些事件,其他的事件会忽略,
+ * 由下一个ChannelHandler进行拦截和处理;这就会导致一个问题:用户ChannelHandler必须要实现ChannelHandler的所有接口,
+ * 包括它不关心的那些事件处理接口,这回导致用户代码的冗余和臃肿,代码的可维护性也会变差;
+ * 为了解决这个问题,Netty提供了ChannelHandlerAdapter;
+ */
 public abstract class ChannelHandlerAdapter implements ChannelHandler {
 
     // Not using volatile because it's used only for a sanity check.

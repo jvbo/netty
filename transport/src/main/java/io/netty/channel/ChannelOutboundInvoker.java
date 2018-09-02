@@ -222,6 +222,13 @@ public interface ChannelOutboundInvoker {
     /**
      * Shortcut for call {@link #write(Object, ChannelPromise)} and {@link #flush()}.
      */
+    /**
+     * TODO 与 #Channel write(Object msg, ChannelPromise promise)类似,
+     * 不同之处在于它会将消息写入到Channel中发送,等价于单独调用write和flush操作;
+     * @param msg
+     * @param promise
+     * @return
+     */
     ChannelFuture writeAndFlush(Object msg, ChannelPromise promise);
 
     /**

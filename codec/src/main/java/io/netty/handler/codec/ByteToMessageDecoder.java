@@ -67,6 +67,12 @@ import java.util.List;
  * is not released or added to the <tt>out</tt> {@link List}. Use derived buffers like {@link ByteBuf#readSlice(int)}
  * to avoid leaking memory.
  */
+
+/**
+ * TODO 抽象工具解码类,将读取到的字节数组或者字节缓冲区解码为业务可以使用的POJO对象;
+ * ByteToMessageDecoder并没有考虑tcp粘包和组包等场景,读半包需要用户解码器自己负责处理;
+ * 所以大多数场景不会直接继承ByteToMessageDecoder,而是继承另外一些更高级的解码器来屏蔽半包的处理;
+ */
 public abstract class ByteToMessageDecoder extends ChannelInboundHandlerAdapter {
 
     /**
@@ -252,11 +258,15 @@ public abstract class ByteToMessageDecoder extends ChannelInboundHandlerAdapter 
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        if (msg instanceof ByteBuf) {
+		// 判断是否ByteBuf,是->解码,否->透传;
+    	if (msg instanceof ByteBuf) {
             CodecOutputList out = CodecOutputList.newInstance();
             try {
                 ByteBuf data = (ByteBuf) msg;
-                first = cumulation == null;
+                // 通过cumulation是否为空判断解码器是否缓存了没有解码完成的半包消息,
+				// 如果为空,说明是首次解码或者最近一次已经处理完了半包消息,没有缓存的半包消息需要处理,直接将需要解码的ByteBuf赋值给cumulation;
+				// 如果缓存有上次没有解码完成的ByteBuf,则进行赋值操作,将需要解码的ByteBuf复制到cumulation中;
+				first = cumulation == null;
                 if (first) {
                     cumulation = data;
                 } else {
@@ -404,6 +414,7 @@ public abstract class ByteToMessageDecoder extends ChannelInboundHandlerAdapter 
      * @param in            the {@link ByteBuf} from which to read data
      * @param out           the {@link List} to which decoded messages should be added
      */
+    // TODO 进行解码
     protected void callDecode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) {
         try {
             while (in.isReadable()) {

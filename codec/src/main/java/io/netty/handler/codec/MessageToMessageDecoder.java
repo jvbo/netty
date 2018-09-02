@@ -49,6 +49,12 @@ import java.util.List;
  * {@link ReferenceCounted#release()} on decoded messages.
  *
  */
+
+/**
+ * TODO Netty的二次解码器;职责是将一个对象二次解码为其他对象;
+ * 不会涉及到半包的处理;
+ * @param <I>
+ */
 public abstract class MessageToMessageDecoder<I> extends ChannelInboundHandlerAdapter {
 
     private final TypeParameterMatcher matcher;

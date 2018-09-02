@@ -54,6 +54,16 @@ import static io.netty.channel.internal.ChannelUtils.MAX_BYTES_PER_GATHERING_WRI
  * {@link io.netty.channel.socket.SocketChannel} which uses NIO selector based implementation.
  */
 public class NioSocketChannel extends AbstractNioByteChannel implements io.netty.channel.socket.SocketChannel {
+
+    /**
+     * 1. 连接操作;
+     *      连接成功,返回true;
+     *      暂时没有连接上,服务端没有返回ACK应答,连接结果不确定,返回false;
+     *      连接失败,直接抛出I/O异常;
+     * 2. 写半包;
+     * 3. 读写操作;
+     */
+
     private static final InternalLogger logger = InternalLoggerFactory.getInstance(NioSocketChannel.class);
     private static final SelectorProvider DEFAULT_SELECTOR_PROVIDER = SelectorProvider.provider();
 
