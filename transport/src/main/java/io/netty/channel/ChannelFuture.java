@@ -162,7 +162,25 @@ import java.util.concurrent.TimeUnit;
  * }
  * </pre>
  */
+// TODO 异步I/O操作相关的的 #Future , 与Channel相关
 public interface ChannelFuture extends Future<Void> {
+
+	/**
+	 * ChannelFuture两种状态
+	 * 1. uncompleted : 非失败,非成功,非取消;
+	 * 2. completed : 完成;
+	 *
+	 *最佳实践:
+	 * 1. 使用GenericFutureListener代替ChannelFuture的get();
+	 * 原因是:
+	 * 		当我们进行异步I/O操作时,完成的时间时无法预测的,如果不设置超时时间,会导致调用线程长时间被阻塞,甚至挂死;
+	 * 		而设置超时时间,时间又无法精确预测,故利用异步通知机制回调GenericFutureListener是最佳方案;
+	 *
+	 * 2. 不要在ChannelHandler中调用ChannelFuture的await(), 会导致死锁;
+	 * 原因是:
+	 * 		发起I/O操作之后,由I/O线程负责异步通知发起I/O操作的用户线程,如果I/O线程和用户线程是同一个线程,
+	 * 		就会导致等待自己通知操作完成,这就导致了死锁,类似两个线程互斥等待;
+	 */
 
     /**
      * Returns a channel where the I/O operation associated with this

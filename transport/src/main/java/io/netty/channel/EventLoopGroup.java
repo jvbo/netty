@@ -45,6 +45,8 @@ public interface EventLoopGroup extends EventExecutorGroup {
 	 * 将新创建的SocketChannel注册到I/O线程池(sub reactor线程池)的某个I/O线程上,
 	 * 由它负责SocketChannel的读写和编解码工作;Acceptor线程池仅仅用于客户端的登录,握手和安全认证,一旦链路建立成功,
 	 * 就将链路注册到后端subReactor线程池的I/O线程上,由I/O线程负责后续的I/O操作;
+	 *
+	 *
 	 */
 
     /**

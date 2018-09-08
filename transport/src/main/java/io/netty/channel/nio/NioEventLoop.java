@@ -56,6 +56,30 @@ import java.util.concurrent.atomic.AtomicBoolean;
 // TODO reactor线程
 public final class NioEventLoop extends SingleThreadEventLoop {
 
+	/**
+	 * Netty多线程编程最佳实践
+	 * 1. 创建两个NioEventLoopGroup,用于逻辑隔离NIO Acceptor和NIO I/O线程;
+	 * 2. 尽量不要在ChannelHandler中启动用户线程(解码后用于将POJO消息派发到后端业务线程的除外);
+	 * 3. 解码要放在NIO线程调用的解码Handler中进行,不要切换到用户线程中完成消息解码;
+	 * 4. 如果业务逻辑操作非常简单,没有复杂的业务逻辑计算,没有可能会导致线程被阻塞的磁盘操作,数据库操作,网络操作等,
+	 * 可以直接在NIO线程上完成业务逻辑编排,不需要切换到用户线程;
+	 * 5. 如果业务逻辑处理复杂,不要在NIO线程上完成,建议将解码后的POJO消息封装成Task,派发到业务线程池中由业务线程执行,
+	 * 以保证NIO线程尽快被释放,处理其他的I/O操作;
+	 * 推荐的线程数量计算公式有以下两种:
+	 * 		公式一: 线程数量 = (线程总时间 / 瓶颈资源时间) * 瓶颈资源的线程并行数;
+	 * 		公式二: QPS = 1000 / 线程总时间 * 线程数;
+	 * 	由于用户场景的不同,对于一些复杂的系统,实际上很难计算出最优线程配置,只能是根据测试数据和用户场景,结合公式给出一个
+	 * 	相对合理的范围,然后对范围内的数据进行性能测试,选择相对最优值;
+	 *
+	 *
+	 * 	Netty的NioEventLoop并不是一个纯粹的I/O线程,它除了负责I/O的读写之外,还兼顾处理以下两类任务:
+	 * 	1. 系统Task: 通过调用NioEventLoop的execute(Runnable task)方法实现,Netty有很多系统Task,创建它们的主要原因是:
+	 * 	当I/O线程和用户线程同时操作网络资源时,为了防止并发操作导致的锁竞争,将用户线程的操作封装成Task放入消息队列中,
+	 * 	由I/O线程负责执行,这样就实现了局部无锁化操作;
+	 *
+	 * 	2. 定时任务: 通过NioEventLoop的schedule(Runnable command, long delay, TimeUnit unit)方法实现;
+	 */
+
     private static final InternalLogger logger = InternalLoggerFactory.getInstance(NioEventLoop.class);
 
     private static final int CLEANUP_INTERVAL = 256; // XXX Hard-coded value, but won't need customization.
@@ -205,6 +229,7 @@ public final class NioEventLoop extends SingleThreadEventLoop {
         }
 
         final Class<?> selectorImplClass = (Class<?>) maybeSelectorImplClass;
+		// Netty对Selector的selectedKeys进行了优化,用户可以通过开关决定是否优化;
         final SelectedSelectionKeySet selectedKeySet = new SelectedSelectionKeySet();
 
         Object maybeException = AccessController.doPrivileged(new PrivilegedAction<Object>() {
