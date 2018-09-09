@@ -18,7 +18,14 @@ package io.netty.util.concurrent;
 /**
  * Special {@link Future} which is writable.
  */
+// TODO 异步回调通知,Promise是可写的Future,Future自身没有写操作相关的接口,Netty通过Promise对Future进行扩展;
 public interface Promise<V> extends Future<V> {
+
+	/**
+	 * Netty发起I/O操作的时候,会创建一个新的Promise对象,
+	 * 例如 #ChannalHandlerContext的write(Object object),会创建一个新的ChannelPromise,
+	 * I/O操作完成时,会设置Promise的结果;
+	 */
 
     /**
      * Marks this future as a success and notifies all

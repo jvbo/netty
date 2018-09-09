@@ -25,10 +25,18 @@ import java.util.concurrent.TimeoutException;
  *
  * @param <V>
  */
+// TODO 不允许I/O操作被取消
 public abstract class AbstractFuture<V> implements Future<V> {
 
+	/**
+	 * TODO 获取异步操作结果
+	 * @return
+	 * @throws InterruptedException
+	 * @throws ExecutionException
+	 */
     @Override
     public V get() throws InterruptedException, ExecutionException {
+    	// 无限期阻塞, I/O操作完成后会被notify()
         await();
 
         Throwable cause = cause();

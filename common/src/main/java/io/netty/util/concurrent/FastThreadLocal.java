@@ -43,6 +43,23 @@ import java.util.Set;
  */
 public class FastThreadLocal<V> {
 
+	/**
+	 * 主流操作系统实现线程的三种方式:
+	 * 1. 内核线程实现(KLT),这种线程由内核来完成线程切换,内核通过线程调度器对线程进行调度,并负责将线程任务映射到不同的处理器上;
+	 * 2. 用户线程实现(UT),通常情况下,用户线程指的是完全建立在用户空间线程库上的线程,用户线程的创建,启动,运行,销毁,和切换完全在用户态中完成,不需要内核的帮助,因此执行性能更高;
+	 * 3. 混合实现,将内核线程和用户线程混合在一起使用;
+	 *
+	 * java.util.concurrent包的4类工具;
+	 * 1. 线程池Executor Framework以及定时任务相关的类库,包括Timer等;
+	 * 2. 并发集合,包括List,Queue,Map和Set等;
+	 * 3. 同步器,例如读写锁ReadWriteLock等;
+	 * 4. 原子包装类,例如AtomicInteger等;
+	 *
+	 * 最佳实践:
+	 * 在实际编码过程中,建议通过使用线程池,Task(Runnable/Callable),原子类和线程安全容器来代替传统的同步锁,wait和notify,
+	 * 以提升并发访问的性能,降低多线程编程的难度;
+	 */
+
     private static final int variablesToRemoveIndex = InternalThreadLocalMap.nextVariableIndex();
 
     /**

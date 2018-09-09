@@ -84,7 +84,7 @@ public abstract class SingleThreadEventExecutor extends AbstractScheduledEventEx
     private volatile Thread thread;
     @SuppressWarnings("unused")
     private volatile ThreadProperties threadProperties;
-    private final Executor executor;
+    private final Executor executor;// 标准线程池,用于执行任务
     private volatile boolean interrupted;
 
     private final Semaphore threadLock = new Semaphore(0);
@@ -755,8 +755,16 @@ public abstract class SingleThreadEventExecutor extends AbstractScheduledEventEx
         return isTerminated();
     }
 
-    @Override
+	/**
+	 * TODO 执行任务
+	 * @param task
+	 */
+	@Override
     public void execute(Runnable task) {
+		/**
+		 * 把任务放入到任务队列中,
+		 * 然后判断线程是否已经启动循环执行,如果不是则需要启动线程
+		 */
         if (task == null) {
             throw new NullPointerException("task");
         }
@@ -855,6 +863,9 @@ public abstract class SingleThreadEventExecutor extends AbstractScheduledEventEx
 
     private static final long SCHEDULE_PURGE_INTERVAL = TimeUnit.SECONDS.toNanos(1);
 
+	/**
+	 * TODO 启动线程
+	 */
     private void startThread() {
         if (state == ST_NOT_STARTED) {
             if (STATE_UPDATER.compareAndSet(this, ST_NOT_STARTED, ST_STARTED)) {
@@ -869,7 +880,7 @@ public abstract class SingleThreadEventExecutor extends AbstractScheduledEventEx
     }
 
     private void doStartThread() {
-        assert thread == null;
+		assert thread == null;
         executor.execute(new Runnable() {
             @Override
             public void run() {
@@ -881,6 +892,9 @@ public abstract class SingleThreadEventExecutor extends AbstractScheduledEventEx
                 boolean success = false;
                 updateLastExecutionTime();
                 try {
+					/**
+					 * 实际上就是执行当前线程的run(),循环从任务队列中获取Task并执行; 最终 #NioEventLoop.run();
+					 */
                     SingleThreadEventExecutor.this.run();
                     success = true;
                 } catch (Throwable t) {

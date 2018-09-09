@@ -255,6 +255,25 @@ import java.nio.charset.UnsupportedCharsetException;
 @SuppressWarnings("ClassMayBeInterface")
 public abstract class ByteBuf implements ReferenceCounted, Comparable<ByteBuf> {
 
+	/**
+	 * java工作内存和主内存
+	 * 1. java内存模型规定所有的变量都存储在主内存中(jvm内存的一部分),
+	 * 每个线程有自己独立的工作内存,它保存了被该线程使用的变量的主内存复制;
+	 * 线程对这些变量的操作都在自己的工作内存中进行,
+	 * 不能直接操作主内存和其他工作内存中存储的变量或者变量副本;
+	 * 线程的变量访问需通过主内存来完成;
+	 *
+	 * java内存模型定义了8种操作来完成主内存和工作内存的变量访问
+	 * 1. lock: 主内存变量,把一个变量标识为某个线程独占的状态;
+	 * 2. unlock: 主内存变量,把一个处于锁定状态的变量释放出来,被释放后的变量才可以被其他线程锁定;
+	 * 3. read: 主内存变量,把一个变量的值从主内存传输到线程的工作内存中,以便随后的load动作使用;
+	 * 4. load: 工作内存变量,把read读取到的主内存中的变量值放入工作内存的变量副本中;
+	 * 5. use: 工作内存变量,把工作内存中变量的值传递给java虚拟机执行引擎,每当虚拟机遇到一个需要使用到变量值的字节码指令时,将会执行该操作;
+	 * 6. assign: 工作内存变量,把从执行引擎接收到的变量赋值给工作变量,每当虚拟机遇到一个变量赋值的字节码时,将会执行该操作;
+	 * 7. store: 工作内存变量,把工作内存中一个变量的值传递到主内存中,以便随后的write操作使用;
+	 * 8. write: 主内存变量,把store操作从工作内存中得到的变量放入主内存的变量中;
+	 */
+
     /**
      * Returns the number of bytes (octets) this buffer can contain.
      */

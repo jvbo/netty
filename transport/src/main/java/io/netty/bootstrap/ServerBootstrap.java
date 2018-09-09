@@ -42,8 +42,17 @@ import java.util.concurrent.TimeUnit;
  */
 public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerChannel> {
 
+	/**
+	 * 为什么有的地方需要加锁,有的地方又不需要;为什么不需要;为什么要;
+	 *
+	 * 锁的范围;
+	 * 加锁的时机;
+	 * 锁的协同;
+	 */
+
     private static final InternalLogger logger = InternalLoggerFactory.getInstance(ServerBootstrap.class);
 
+	// TODO 非线程安全的LinkedHashMap,多线程创建,访问和修改时,必须在外部进行必要的同步;
     private final Map<ChannelOption<?>, Object> childOptions = new LinkedHashMap<ChannelOption<?>, Object>();
     private final Map<AttributeKey<?>, Object> childAttrs = new LinkedHashMap<AttributeKey<?>, Object>();
     private final ServerBootstrapConfig config = new ServerBootstrapConfig(this);
@@ -95,10 +104,13 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
      * {@link ChannelOption}.
      */
     public <T> ServerBootstrap childOption(ChannelOption<T> childOption, T value) {
+    	// 这里对并发可变数据进行正确的同步
         if (childOption == null) {
             throw new NullPointerException("childOption");
         }
         if (value == null) {
+        	// 考虑到锁的范围需要尽可能的小,对传参的childOption进行合法性判断无需加锁,
+			// 保证锁的范围尽可能的细粒度;
             synchronized (childOptions) {
                 childOptions.remove(childOption);
             }

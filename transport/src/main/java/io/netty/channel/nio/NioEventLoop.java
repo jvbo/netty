@@ -157,7 +157,18 @@ public final class NioEventLoop extends SingleThreadEventLoop {
 
     private final SelectStrategy selectStrategy;
 
-    private volatile int ioRatio = 50;
+	/**
+	 * volatile修改
+	 * 1. 线程可见性: 当一个线程修改了被volatile修饰的变量后,无论是否加锁,其他线程都可以立即看到最新的修改,而普通变量却做不到这点;
+	 * 2. 禁止指令重排序优化,普通的变量仅仅保证在该方法的执行过程中所有依赖赋值结果的地方都能获取正确的结果,
+	 * 而不能保证变量赋值操作的顺序与程序代码的执行顺序一致;
+	 *
+	 * 最佳实践:
+	 * volatile最适合使用的是一个线程写,其他线程读的场合,如果有个多个线程并发写操作,
+	 * 仍然需要使用锁或者线程安全的容器或者原子变量来代替;
+	 *
+	 */
+    private volatile int ioRatio = 50;// volatile变量,控制I/O操作和其他任务运行比例;
     private int cancelledKeys;
     private boolean needsToSelectAgain;
 
@@ -278,7 +289,12 @@ public final class NioEventLoop extends SingleThreadEventLoop {
         return provider;
     }
 
-    @Override
+	/**
+	 * TODO 任务队列,缓存Task
+	 * @param maxPendingTasks
+	 * @return
+	 */
+	@Override
     protected Queue<Runnable> newTaskQueue(int maxPendingTasks) {
         // This event loop never calls takeTask()
         return maxPendingTasks == Integer.MAX_VALUE ? PlatformDependent.<Runnable>newMpscQueue()
@@ -339,7 +355,15 @@ public final class NioEventLoop extends SingleThreadEventLoop {
      * Sets the percentage of the desired amount of time spent for I/O in the event loop.  The default value is
      * {@code 50}, which means the event loop will try to spend the same amount of time for I/O as for non-I/O tasks.
      */
-    public void setIoRatio(int ioRatio) {
+	/**
+	 * 这里重新设置了I/O执行时间比例
+	 * @param ioRatio
+	 */
+	public void setIoRatio(int ioRatio) {
+		/**
+		 * NioEventLoop线程没有调用该方法,说明调整I/O执行时间比例是外部发起的操作,通常是由业务的线程调用该方法,重新设置参数;
+		 * 这样就形成了一个线程写,一个线程读,volatile的最佳实践;
+		 */
         if (ioRatio <= 0 || ioRatio > 100) {
             throw new IllegalArgumentException("ioRatio: " + ioRatio + " (expected: 0 < ioRatio <= 100)");
         }
