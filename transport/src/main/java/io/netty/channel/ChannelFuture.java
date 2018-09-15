@@ -162,7 +162,16 @@ import java.util.concurrent.TimeUnit;
  * }
  * </pre>
  */
-// TODO 异步I/O操作相关的的 #Future , 与Channel相关
+
+/**
+ * TODO 异步I/O操作相关的的 #Future , 与Channel相关;
+ *
+ * 异步通知;
+ *
+ * Netty中所有的I/O操作都是异步的;因为一个操作可能不会立即返回,所以需要一种用于在之后的某个时间点确定其结果的方法;
+ * 为此,Netty提供了ChannelFuture接口,其addListener()注册了一个ChannelFutureListener,
+ * 以便在某个操作完成时(无论是否成功)得到通知;
+ */
 public interface ChannelFuture extends Future<Void> {
 
 	/**

@@ -78,6 +78,15 @@ import java.net.SocketAddress;
 /**
  * TODO 是Netty网络操作抽象类,聚合了一组功能,
  * 包括但不限于网络的读,写,客户端发起连接,主动关闭连接,链路关闭,获取通信双方的网络地址等;
+ *
+ * 代表一个实体(如一个硬件设备,一个文件,一个网络套接字或者一个能够执行一个或者多个不同的I/O操作的程序组件)的开放连接,如读操作和写操作;
+ * Channel可以看作是传入(入站)或者传出(出站)数据的载体;因此,它可以被打开或者被关闭,连接或者断开连接;
+ *
+ * Socket;
+ *
+ * 基本的I/O操作(bind(), connect(), read(), write())依赖于底层网络传输所提供的原语;
+ *
+ * 有一系列实现类,是拥有许多预定义的,专门化实现的广泛类层次结构的根;
  */
 public interface Channel extends AttributeMap, ChannelOutboundInvoker, Comparable<Channel> {
 

@@ -78,6 +78,18 @@ import static io.netty.util.internal.StringUtil.simpleClassName;
  */
 public class HashedWheelTimer implements Timer {
 
+	/**
+	 * 读写锁使用场景:
+	 * 1. 主要用于读多写少的场景,用来替代传统的同步锁,以提升并发访问性能;
+	 * 2. 读写锁是可重入,可降级的,一个线程获取读写锁后,可以继续递归获取;从写锁可以降级为读锁,以便快速释放锁资源;
+	 * 3. ReentrantReadWriteLock支持获取锁的公平策略,在某些特殊的应用场景下,可以提升并发访问的性能,
+	 * 同时兼顾线程等待公平性;
+	 * 4. 读写锁支持非阻塞的尝试获取锁,如果获取失败,直接返回false,而不是同步阻塞,这个功能在一些场景下非常有用;
+	 * 例如多个线程同步读写某个资源,当发生异常或者需要释放资源的时候,由哪个线程释放是个难题,
+	 * 因为某些资源不能重复释放或者重复执行,这样,可以通过tryLock()尝试获取锁,如果拿不到,说明已经被其他线程占用,直接退出即可;
+	 * 5. 获取锁之后一定要释放锁,否则会发生锁溢出异常;通常是通过finally块释放锁,如果是tryLock,获取锁成功才需要释放锁;
+	 */
+
     static final InternalLogger logger =
             InternalLoggerFactory.getInstance(HashedWheelTimer.class);
 
@@ -396,6 +408,17 @@ public class HashedWheelTimer implements Timer {
         return worker.unprocessedTimeouts();
     }
 
+	/**
+	 * TODO 新增定时任务的时候,使用了读锁,用于感知wheel变化;
+	 * 由于读锁是共享锁,所以当有多个线程同时调用newTimeout时,
+	 * 并不会互斥,这样提升了并发读的性能;
+	 *
+	 * 后面读取并删除所有过期的任务时,由于要从迭代器中删除任务,所以使用了写锁;
+	 * @param task
+	 * @param delay
+	 * @param unit
+	 * @return
+	 */
     @Override
     public Timeout newTimeout(TimerTask task, long delay, TimeUnit unit) {
         if (task == null) {

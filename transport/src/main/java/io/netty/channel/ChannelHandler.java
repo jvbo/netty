@@ -179,6 +179,10 @@ import java.lang.annotation.Target;
 /**
  * TODO 负责对I/O事件或者I/O操作进行拦截和处理,它可以选择性地拦截和处理自己感兴趣的事件,
  * 也可以透传和终止时间的传递;
+ *
+ * 从应用程序开发人员的角度来看,netty的主要组件是ChannelHandler,它充当了所有处理入站和出站数据的应用程序逻辑的容器;
+ * 因为ChannelHandler的方法是由网络事件触发的;事实上,ChannelHandler可专门用于几乎任何类型的动作;
+ * 例如将数据从一种格式转换为另一种格式,或者处理转换过程中所抛出的异常;
  */
 public interface ChannelHandler {
 

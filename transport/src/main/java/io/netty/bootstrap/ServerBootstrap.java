@@ -40,6 +40,11 @@ import java.util.concurrent.TimeUnit;
  * {@link Bootstrap} sub-class which allows easy bootstrap of {@link ServerChannel}
  *
  */
+
+/**
+ * TODO Netty服务端引导类;
+ * 为应用程序的网络层配置提供了容器,这里涉及将一个进程绑定到指定的端口;
+ */
 public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerChannel> {
 
 	/**

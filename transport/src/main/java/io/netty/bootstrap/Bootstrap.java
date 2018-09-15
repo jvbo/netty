@@ -46,6 +46,11 @@ import java.util.Map.Entry;
  * <p>The {@link #bind()} methods are useful in combination with connectionless transports such as datagram (UDP).
  * For regular TCP connections, please use the provided {@link #connect()} methods.</p>
  */
+
+/**
+ * TODO Netty客户端引导类;
+ * 为应用程序的网络层配置提供了容器,这里涉及将一个进程连接到另一个运行在某个指定主机的指定端口上的进程;
+ */
 public class Bootstrap extends AbstractBootstrap<Bootstrap, Channel> {
 
     private static final InternalLogger logger = InternalLoggerFactory.getInstance(Bootstrap.class);

@@ -56,8 +56,14 @@ public class FastThreadLocal<V> {
 	 * 4. 原子包装类,例如AtomicInteger等;
 	 *
 	 * 最佳实践:
-	 * 在实际编码过程中,建议通过使用线程池,Task(Runnable/Callable),原子类和线程安全容器来代替传统的同步锁,wait和notify,
+	 * 1. 在实际编码过程中,建议通过使用线程池,Task(Runnable/Callable),原子类和线程安全容器来代替传统的同步锁,wait和notify,
 	 * 以提升并发访问的性能,降低多线程编程的难度;
+	 *
+	 * 2. 不要依赖线程优先级;
+	 * 当有多个线程同时运行的时候,由线程调度器来决定哪些线程运行,哪些等待以及线程切换的时间点,
+	 * 由于各个操作系统的线程调度器实现大相径庭,因此,依赖jdk自带的线程优先级来设置线程优先级策略的方法是错误和非平台可移植的,
+	 * 所以,在任何情况下,程序都不能依赖jdk自带的线程优先级来保证执行顺序,比例和策略;
+	 * Netty中默认的线程工厂实现类,开放了包含设置线程优先级字段的构造函数,这是个错误的决定;
 	 */
 
     private static final int variablesToRemoveIndex = InternalThreadLocalMap.nextVariableIndex();

@@ -22,6 +22,12 @@ import java.util.concurrent.TimeUnit;
 /**
  * The result of an asynchronous operation.
  */
+
+/**
+ * TODO Future提供了另一种在操作完成时通知应用程序的方式,这个对象可以看作是一个异步操作的结果的占位符;
+ * 它将在未来的某个时刻完成,并提供对其结果的访问;
+ * @param <V>
+ */
 @SuppressWarnings("ClassNameSameAsAncestorName")
 public interface Future<V> extends java.util.concurrent.Future<V> {
 

@@ -217,6 +217,11 @@ import java.util.NoSuchElementException;
 /**
  * TODO ChannelPipeline和ChannelHandler机制类似于Servlet和Filter过滤器,
  * 这类拦截器实际上是责任链模式的一种变形,主要是为了方便事件的拦截和用户业务逻辑的定制;
+ *
+ * 上面有Thread safety说明(线程安全性文档说明),因为ChannelPipeline的应用非常广泛;
+ *
+ * ChannelPipeline提供了ChannelHandler链的容器,并定义了用于在该链上传播入站和出站事件流的api;
+ * 当Channel被创建时,它会被自动的分配到它专属的ChannelPipeline;
  */
 public interface ChannelPipeline
         extends ChannelInboundInvoker, ChannelOutboundInvoker, Iterable<Entry<String, ChannelHandler>> {
