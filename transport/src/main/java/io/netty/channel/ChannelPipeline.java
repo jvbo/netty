@@ -222,6 +222,8 @@ import java.util.NoSuchElementException;
  *
  * ChannelPipeline提供了ChannelHandler链的容器,并定义了用于在该链上传播入站和出站事件流的api;
  * 当Channel被创建时,它会被自动的分配到它专属的ChannelPipeline;
+ *
+ * 拦截过滤器: 类似UNIX管道(多个命令被链接在一起,其中一个命令的输出端将连接到命令行中下一个命令的输入端);
  */
 public interface ChannelPipeline
         extends ChannelInboundInvoker, ChannelOutboundInvoker, Iterable<Entry<String, ChannelHandler>> {

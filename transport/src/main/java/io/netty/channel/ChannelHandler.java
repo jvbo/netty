@@ -197,19 +197,35 @@ public interface ChannelHandler {
     /**
      * Gets called after the {@link ChannelHandler} was added to the actual context and it's ready to handle events.
      */
-    void handlerAdded(ChannelHandlerContext ctx) throws Exception;
+	/**
+	 * TODO 当把ChannelHandler添加到ChannelPipeline中时被调用;
+	 * @param ctx
+	 * @throws Exception
+	 */
+	void handlerAdded(ChannelHandlerContext ctx) throws Exception;
 
     /**
      * Gets called after the {@link ChannelHandler} was removed from the actual context and it doesn't handle events
      * anymore.
      */
-    void handlerRemoved(ChannelHandlerContext ctx) throws Exception;
+	/**
+	 * TODO 当从ChannelPipeline中移除ChannelHandler时被调用;
+	 * @param ctx
+	 * @throws Exception
+	 */
+	void handlerRemoved(ChannelHandlerContext ctx) throws Exception;
 
     /**
      * Gets called if a {@link Throwable} was thrown.
      *
      * @deprecated is part of {@link ChannelInboundHandler}
      */
+	/**
+	 * TODO 当处理过程中在ChannelPipeline中有错误产生时被调用;
+	 * @param ctx
+	 * @param cause
+	 * @throws Exception
+	 */
     @Deprecated
     void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception;
 

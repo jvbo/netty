@@ -25,6 +25,8 @@ package io.netty.buffer;
  * 按照Netty的缓冲区实现不同,共有两种不同的分配器:
  * 1. 基于内存的字节缓冲区分配器;
  * 2. 普通的字节缓冲区分配器;
+ *
+ * 按需分配;使用了池化;
  */
 public interface ByteBufAllocator {
 

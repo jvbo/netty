@@ -20,6 +20,11 @@ import java.net.SocketAddress;
 /**
  * {@link ChannelHandler} which will get notified for IO-outbound-operations.
  */
+
+/**
+ * TODO 对从服务器发往客户端的报文进行处理,一般用来进行编码,发送报文到客户端;
+ * 按注册的先后顺序逆序执行;
+ */
 public interface ChannelOutboundHandler extends ChannelHandler {
     /**
      * Called once a bind operation is made.

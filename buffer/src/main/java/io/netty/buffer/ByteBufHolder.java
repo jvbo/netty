@@ -31,21 +31,38 @@ import io.netty.util.ReferenceCounted;
  * 另外还提供了一些其他实用的方法,使用者继承ByteBufHolder接口后可以按需封装自己的实现;
  */
 public interface ByteBufHolder extends ReferenceCounted {
+	/**
+	 * 我们经常发现,除了实际的数据负载之外,我们还需要存储各种属性值;http响应便是一个例子,除了表示为字节的内容,还包括状态码,cookie等;
+	 * 为了支这种常见的用例,Netty提供了ByteBufHolder,也为Netty的高级特性提供了支持,如缓冲区池化,其中可以从池中借用ByteBuf,在需要时自动释放;
+	 *
+	 */
 
     /**
      * Return the data which is held by this {@link ByteBufHolder}.
      */
-    ByteBuf content();
+	/**
+	 * TODO 返回由这个ByteBufHolder所持有的ByteBuf;
+	 * @return
+	 */
+	ByteBuf content();
 
     /**
      * Creates a deep copy of this {@link ByteBufHolder}.
      */
-    ByteBufHolder copy();
+	/**
+	 * TODO 返回由这个ByteBufHolder所持有的深拷贝,包括一个其所包含的ByteBuf的非共享拷贝;
+	 * @return
+	 */
+	ByteBufHolder copy();
 
     /**
      * Duplicates this {@link ByteBufHolder}. Be aware that this will not automatically call {@link #retain()}.
      */
-    ByteBufHolder duplicate();
+	/**
+	 * TODO 返回这个ByteBufHolder的浅拷贝,包括一个其所包含的ByteBuf的共享拷贝;
+	 * @return
+	 */
+	ByteBufHolder duplicate();
 
     /**
      * Duplicates this {@link ByteBufHolder}. This method returns a retained duplicate unlike {@link #duplicate()}.

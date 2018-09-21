@@ -107,6 +107,38 @@ public interface Channel extends AttributeMap, ChannelOutboundInvoker, Comparabl
      * 2. Channel接口的定义尽量大而全,为SocketChannel和ServerSocketChannel提供统一的视图,由不同的子类实现不同的功能,
      * 公共功能在抽象父类中实现,最大程度上实现功能和接口的重用;
      * 3. 具体实现采用聚合而非包含的方式,将相关的功能类聚合在Channel中,由Channel统一负责分配和调度;功能实现更加灵活;
+	 *
+	 *
+	 * Netty的传输:
+	 * 1. NIO: 在io.netty.channel.socket.nio包中;使用java.nio.channels包作为基础--基于选择器的方式;
+	 * 		NIO提供了一个所有I/O操作的全异步的实现;它利用了自NIO子系统被引入JDK1.4时便可用的基于选择器的api;
+	 * 		选择器背后的基本概念是充当一个注册表,在那里你将可以请求在Channel的状态发生变化时得到通知,可能的状态变化有:
+	 * 			1. 新的Channel已被接受并且就绪;
+	 * 			2. Channel连接已经完成;
+	 * 			3. Channel有已经就绪的可供读取的数据;
+	 * 			4. Channel可用于写数据;
+	 *
+	 * 		零拷贝:是一种目前只有在使用NIO和Epoll传输时才可使用的特性,它使你可以快速高效的将数据从文件系统移动到网络接口,
+	 * 		而不需要将其从内核空间复制到用户空间,其在像FTP或者HTTP这样的协议中可以显著地提升性能;但是,并不是所有的操作系统都支持这一特性;
+	 * 		特别的,它对于实现了数据加密或者压缩的文件系统是不可用的--只能传输文件的原始内容;反过来说,传输已被加密的文件则不是问题;
+	 * 2. Epoll: 在io.netty.channel.epoll包中;有JNI驱动的epoll()和非阻塞IO;这个传输支持只有在Linux上可用的多种特性,
+	 * 如SO_REUSEPORT,比NIO传输更快,而且是完全非阻塞的;
+	 * 3. OIO: 在io.netty.channel.socket.oio包中;使用java.net包作为基础--使用阻塞流;
+	 * 4. Local: 在io.netty.channel.local包中;可以在VM内部通过管道进行通信的本地传输;
+	 * 5. Embedded: 在io.netty.channel.embedded包中;Embedded传输,允许使用ChannelHandler而又不需要一个真正的基于网络的传输;
+	 * 这在测试ChannelHandler实现时非常有用;
+	 *
+	 * 关于传输的一些建议:
+	 * 1. 非阻塞代码库: 如果代码库中没有阻塞调用(或者你能够限制它们的范围),那么在Linux上使用NIO或者epoll始终是个好主意;
+	 * 虽然NIO/epoll旨在处理大量的并发连接,但是在处理较小数目的并发连接时,它也能很好的工作,尤其是考虑到它在连接之间共享线程的方式;
+	 * 2. 阻塞代码库: 如果代码库严重依赖于阻塞I/O,而且你的应用程序也有一个响应的设计,那么在你尝试将其直接转换为Netty的NIO传输时,
+	 * 你将可能会遇到和阻塞操作相关的问题,不要为此而重写你的代码,可以考虑分阶段迁移: 先从OIO开始,等你的代码修改好之后,
+	 * 再迁移到NIO(或者使用epoll,如果是Linux的话);
+	 * 3. 在同一个jvm内部的通信: 在同一个jvm内部的通信,不需要通过网络暴露服务,是Local传输的完美用例;
+	 * 这将消除所有真实网络操作的开销,同时仍然使用你的Netty代码库;如果随后需要通过网络暴露服务,那么你将只需要把传输改为NIO或者OIO即可;
+	 * 4. 测试ChannelHandler实现: 如果要为ChannelHandler实现编写单元测试,请考虑使用Embedded传输;
+	 * 这既便于测试代码,而又不需要创建大量的模拟(mock)对象,编写的类将仍然符合常规的api事件流,
+	 * 保证该ChannelHandler在和真实的传输一起使用时能够正确的工作;
      */
 
     /**
@@ -125,6 +157,8 @@ public interface Channel extends AttributeMap, ChannelOutboundInvoker, Comparabl
      * TODO Channel需要注册到EventLoop的多路复用器上,用于处理I/O事件,通过eventLoop()方法可以获取到Channel注册的EventLoop;
      * EventLoop本质上就是处理网络读写事件的Reactor线程,在Netty中,它不仅仅用来处理网络事件,也可以用来执行定时任务和
      * 用户自定义NioTask等任务;
+	 *
+	 * 返回分配给Channel的EventLoop
      * @return
      */
     EventLoop eventLoop();
@@ -174,7 +208,10 @@ public interface Channel extends AttributeMap, ChannelOutboundInvoker, Comparabl
      */
     /**
      * TODO 判断当前Channel是否处于激活状态;
-     * @return
+     *
+	 * 如果Channel是活动的,则返回true;活动的意义可能依赖于底层的传输,例如
+	 * 一个Socket传输一旦连接到了远程节点便是活动的,而一个Datagram传输一旦被打开便是活动的;
+	 * @return
      */
     boolean isActive();
 
@@ -259,7 +296,11 @@ public interface Channel extends AttributeMap, ChannelOutboundInvoker, Comparabl
     /**
      * Return the assigned {@link ChannelPipeline}.
      */
-    ChannelPipeline pipeline();
+	/**
+	 * TODO 返回分配给Channel的ChannelPipeline
+	 * @return
+	 */
+	ChannelPipeline pipeline();
 
     /**
      * Return the assigned {@link ByteBufAllocator} which will be used to allocate {@link ByteBuf}s.

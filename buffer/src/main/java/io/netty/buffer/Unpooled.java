@@ -69,6 +69,10 @@ import java.util.List;
  * provided and their name is all {@code copiedBuffer()}.  It is also convenient
  * to use this operation to merge multiple buffers into one buffer.
  */
+
+/**
+ * TODO 提供了静态的辅助方法来创建未池化的ByteBuf实例;
+ */
 public final class Unpooled {
 
     private static final ByteBufAllocator ALLOC = UnpooledByteBufAllocator.DEFAULT;
